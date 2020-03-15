@@ -15,7 +15,7 @@ def initial_inputs():
     print("Ok %s, What's your country called?" % name)
     country_name = input().capitalize()
     print("What's the population of your country?")
-    population = input()
+    population = int(input())
     print("How big is your country [1-5]")
     area_base = 20000   
     area = int(input()) * area_base
