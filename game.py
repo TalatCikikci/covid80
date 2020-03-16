@@ -16,7 +16,8 @@ class Game(object):
     over = False
     countries = []
     vaccine = False
-    
+    new_events = []
+    event_history = []
 
     def __init__(self, player, country):
 
@@ -37,34 +38,29 @@ class Game(object):
         self.country = country
         self.countries.append(self.country)
 
-        initial_virus = Virus()
+        initial_virus = Virus(self, is_initial=True)
         self.viruses.append(initial_virus)
-        lucky_country = choice(self.countries)
-        lucky_country.viruses.append(initial_virus)
-        lucky_country.infected_people=1
-
 
     def tick(self):
+        self.__class__.event_history.extend(self.new_events)
+        self.__class__.new_events = []
+
         inputs = []
         self.week += 1
     
         for v in self.viruses:
-            if rdecide(v.mutation_rate): #Decide if each virus mutates
-                new_virus = v.mutate() 
+            new_virus = v.check_mutation()
+            if new_virus:
                 self.viruses.append(new_virus)
-                if rdecide(1/len(self.countries)): # Decide if the mutated virus is in our country
-                    self.country.viruses.append(new_virus)
+                lucky_country = choice(self.countries)
+                lucky_country.viruses.append(new_virus)
+
+            v.tick()
 
         for country in self.countries:
-            country.incoming_travel()
             if country.population <= country.deaths:
                 self.countries.remove(country)
-            for v in self.viruses:
-                v.infect(country)
-            country.travel(self.popularity_index)
-
-            country.health_care(self.week, self.viruses)
-
+            country.tick(self)
 
         return inputs
 
@@ -91,3 +87,8 @@ class Game(object):
     @property
     def popularity_index(self):
         return ((c, c.popularity) for c in self.countries)
+
+
+    @classmethod
+    def new_event(cls, event):
+        cls.new_events.append(event)

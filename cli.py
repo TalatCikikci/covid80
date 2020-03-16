@@ -47,6 +47,13 @@ def menu(nothing, options=[]):
 
 def print_status(game):
     clear()
+
+    if game.new_events:
+        print("*****News:*****")
+        for event in game.new_events:
+            print(event.message)
+        print("***************")
+    print()
     print("---Global---")
     print("Week: %s, Total Infected: %s, Total detected: %s, Total dead: %s Countries: %s, Vaccine Found: %s, Virus Variants: %s" %\
         (game.week, game.total_infected, game.total_detected, game.total_dead, game.len_countries, game.vaccine, game.len_viruses))
@@ -54,7 +61,8 @@ def print_status(game):
     print("Infected: %s, Detected: %s Immunized: %s, Dead: %s" %\
         (int(game.country.infected_people), game.country.detected_people, game.country.immunized_people, int(game.country.deaths)))
     print("--------------")
-    print()
+    
+    print ()
     print("What will you do?")
 
 def slow_print(str,speed=1):
@@ -65,5 +73,10 @@ def slow_print(str,speed=1):
     print()
 
 def clear():
-    print(chr(27) + "[2J")
+    if not NO_CLEAR:
+        print(chr(27) + "[2J")
 
+
+NO_CLEAR = False
+if '--no-clear' in sys.argv:
+    NO_CLEAR = True

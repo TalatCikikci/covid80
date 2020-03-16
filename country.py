@@ -1,6 +1,7 @@
 from random import choices
 import queue
 
+from constants import sickness_duration
 from rights import LargeGatherings, Schools, Bars, \
                     Restaurants, Streets, OptionalTests, \
                     FoodOrdering, OptionalSocialDistance, \
@@ -22,6 +23,7 @@ class Country(object):
     vaccine_fund = 0
     incoming_people = 0
     incoming_infected = 0
+    available_tests = 0
 
     allowed = [
         LargeGatherings, Schools, Bars, \
@@ -41,7 +43,7 @@ class Country(object):
         self.popularity = popularity
         self.gdp = gdp
         self.name = name
-        self.infection_history = queue.Queue(4)
+        self.infection_history = queue.Queue(sickness_duration)
 
     def travel(self, popularity_index):
         travelling_people = int(self.population*self.gdp/100000000)
@@ -62,13 +64,19 @@ class Country(object):
         self.infected_people += self.incoming_infected
         self.incoming_infected = 0
 
+    def tick(self, game):
+        self.travel(game.popularity_index)
+        self.incoming_travel()
+        self.health_care(game.week, game.viruses)
+
     def health_care(self, week, viruses):
-        if week>=4:
+        if week >= sickness_duration:
             infected_two_weeks = self.infection_history.get()
         else:
             infected_two_weeks = 0
         for v in viruses:
             self.deaths = infected_two_weeks * v.death_rate
             self.infected_people -= infected_two_weeks
+            self.immunized_people += int(infected_two_weeks)
 
         self.infection_history.put(self.infected_people)
