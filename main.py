@@ -4,7 +4,7 @@ from game import Game
 from country import Country
 from player import Player
 from virus import Virus
-from options import do_nothing
+from actions import do_nothing
 import cli
 
 
