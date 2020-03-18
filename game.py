@@ -88,7 +88,6 @@ class Game(object):
     def popularity_index(self):
         return ((c, c.popularity) for c in self.countries)
 
-
     @classmethod
     def new_event(cls, event):
         cls.new_events.append(event)

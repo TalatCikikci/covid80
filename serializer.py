@@ -1,4 +1,5 @@
 import json
+import types
 
 # game objects
 from country import Country
@@ -13,11 +14,7 @@ class GameEncode(json.JSONEncoder):
     def serialize(self, obj):
         data = {}
 
-        try:
-            obj_dict = obj.__dict__
-        except:
-            # TODO: reading property value
-            return {}
+        obj_dict = obj.__dict__
 
         # extending class variables
         if isinstance(obj, self.GAME_OBJECTS):
@@ -31,6 +28,13 @@ class GameEncode(json.JSONEncoder):
             # ignoring non-exportable variables
             if key.startswith('_'):
                 continue
+
+            # reading property objects
+            if getattr(value, 'fget', None):
+                value = value.fget(obj)
+
+                if isinstance(value, types.GeneratorType):
+                    value = list(value)
 
             data[key] = value
 
