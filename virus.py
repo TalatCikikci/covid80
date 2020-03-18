@@ -28,6 +28,20 @@ class Virus(object):
             except:
                 pass
 
+    def to_dict(self):
+        return {
+            'origin': self.origin.to_dict(),
+            'r0': self.r0,
+            'death_rate': self.death_rate,
+            'icu_rate': self.icu_rate,
+            'hospital_rate': self.hospital_rate,
+            'duration': self.duration,
+            'is_sequenced': self.is_sequenced,
+            'mutation_rate': self.mutation_rate,
+            'mutation_chance': self.mutation_chance,
+            'mutation_amount': self.mutation_amount
+        }
+
     @classmethod
     def mutate(cls, game):
         for x in (cls.r0, cls.death_rate, cls.icu_rate, cls.hospital_rate, cls.mutation_rate):

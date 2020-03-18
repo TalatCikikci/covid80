@@ -47,6 +47,26 @@ class Country(object):
         self.name = name
         self.infection_history = queue.Queue(sickness_duration)
 
+    def to_dict(self):
+        return {
+            'population': self.population,
+            'area': self.area,
+            'popularity': self.popularity,
+            'gdp': self.gdp,
+            'name': self.name,
+            'infected_people': self.infected_people,
+            'detected_people': self.detected_people,
+            'immunized_people': self.immunized_people,
+            'deaths': self.deaths,
+            'economy': self.economy,
+            'vaccine_fund': self.vaccine_fund,
+            'incoming_people': self.incoming_people,
+            'incoming_infected': self.incoming_infected,
+            'available_tests': self.available_tests,
+            'allowed': [a.to_dict() for a in self.allowed],
+            'banned': [b.to_dict() for b in self.banned]
+        }
+
     def travel(self, popularity_index):
         travelling_people = int(self.population*self.gdp/100000000)
         countries = []

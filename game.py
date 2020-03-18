@@ -41,6 +41,18 @@ class Game(object):
         initial_virus = Virus(self, is_initial=True)
         self.viruses.append(initial_virus)
 
+    def serialize(self):
+        return {
+            'player': self.player.to_dict(),
+            'country': self.country.to_dict(),
+            'countries': [country.to_dict() for country in self.countries],
+            'viruses': [virus.to_dict() for virus in self.viruses],
+            'week': self.week,
+            'over': self.over,
+            'vaccine': self.vaccine,
+            'event_history': self.event_history
+        }
+
     def tick(self):
         self.__class__.event_history.extend(self.new_events)
         self.__class__.new_events = []

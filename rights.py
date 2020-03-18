@@ -1,7 +1,14 @@
+from serializer import rights_to_dict
+
+
 class Right(object):
     banned = False
     def ban(self):
         self.banned = True
+
+    @classmethod
+    def to_dict(cls):
+        return rights_to_dict(cls)
 
 
 class LargeGatherings(Right):
