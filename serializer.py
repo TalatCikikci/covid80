@@ -18,12 +18,7 @@ class GameEncode(json.JSONEncoder):
         return data        
 
 
-def serialize(obj):
-    try:
-        data = json.dumps(obj, cls=GameEncode, sort_keys=False)
-    except Exception as exc:
-        import ipdb; ipdb.set_trace()
-        data = "{}"
-
+def serialize(obj: 'Game'):
+    data = json.dumps(obj, cls=GameEncode, sort_keys=False)
     with open('game.json', 'w') as f:
         json.dump(data, f)
