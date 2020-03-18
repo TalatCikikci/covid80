@@ -34,8 +34,6 @@ class Country(object):
 
     banned = []
 
-    non_serializable_instance_vars = ['infection_history']
-
     def __init__(self, population=82790000,
                 area=357114, popularity=0.9,
                 name="Testistan", gdp=30000):
