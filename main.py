@@ -5,6 +5,7 @@ from country import Country
 from player import Player
 from virus import Virus
 from actions import do_nothing
+from serializer import serialize
 import cli
 
 
@@ -23,6 +24,7 @@ def main():
 
 def loop(game):
     while not game.over:
+        serialize(game)
         cli.print_status(game)
         options = game.tick()
         cli.menu(do_nothing, options)

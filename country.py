@@ -15,7 +15,7 @@ class Country(object):
     name = ""
     viruses = []
     infected_people = 0
-    infection_history = None
+    _infection_history = None
     detected_people = 0
     immunized_people = 0
     deaths = 0
@@ -43,7 +43,7 @@ class Country(object):
         self.popularity = popularity
         self.gdp = gdp
         self.name = name
-        self.infection_history = queue.Queue(sickness_duration)
+        self._infection_history = queue.Queue(sickness_duration)
 
     def travel(self, popularity_index):
         travelling_people = int(self.population*self.gdp/100000000)
@@ -71,7 +71,7 @@ class Country(object):
 
     def health_care(self, week, viruses):
         if week >= sickness_duration:
-            infected_two_weeks = self.infection_history.get()
+            infected_two_weeks = self._infection_history.get()
         else:
             infected_two_weeks = 0
         for v in viruses:
@@ -79,4 +79,4 @@ class Country(object):
             self.infected_people -= infected_two_weeks
             self.immunized_people += int(infected_two_weeks)
 
-        self.infection_history.put(self.infected_people)
+        self._infection_history.put(self.infected_people)
