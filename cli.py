@@ -61,7 +61,7 @@ def print_status(game):
     print("Infected: %s, Detected: %s Immunized: %s, Dead: %s" %\
         (int(game.country.infected_people), game.country.detected_people, game.country.immunized_people, int(game.country.deaths)))
     print("--------------")
-    
+    print(game.country.transmission_multiplier, game.viruses[0].r0)
     print ()
     print("What will you do?")
 

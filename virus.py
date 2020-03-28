@@ -6,7 +6,7 @@ import events
 class Virus(object):
     game = None
     r0 = 2.4
-    death_rate = 0.035
+    death_rate = 0.035 / 10 #assumes the actual death_rate is lower than the current calculations
     icu_rate = 0.1
     hospital_rate = 0.2
     duration = 2 #weeks
