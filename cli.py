@@ -1,6 +1,9 @@
 import sys, time, os
 from termios import tcflush, TCIOFLUSH
 
+NO_CLEAR = False
+if '--no-clear' in sys.argv:
+    NO_CLEAR = True
 
 def initial_inputs():
     clear()
@@ -27,12 +30,11 @@ def initial_inputs():
 
     return name, country_name, population, area, popularity, gdp
 
-def menu(nothing, options=[]):
-    
+def menu(Nothing, options=[]):
     menu_options = []
     for i, option in enumerate(options):
-        menu_options.append((i+1, option.formatted, option))
-    menu_options.append((0, nothing.formatted, nothing)) #Add a do_nothing option
+        menu_options.append((i+1, option.formatted(), option))
+    menu_options.append((0, Nothing.formatted, None)) #Add a do_nothing option
 
     for option in menu_options:
         print("[%s] %s" % (option[0], option[1]))
@@ -43,7 +45,10 @@ def menu(nothing, options=[]):
         selection = input()
 
     selection = int(selection)
-    return option[selection-1]
+    if selection: 
+        selection -= 1
+    
+    return selection
 
 def print_status(game):
     clear()
@@ -58,12 +63,24 @@ def print_status(game):
     print("Week: %s, Total Infected: %s, Total detected: %s, Total dead: %s Countries: %s, Vaccine Found: %s, Virus Variants: %s" %\
         (game.week, game.total_infected, game.total_detected, game.total_dead, game.len_countries, game.vaccine, game.len_viruses))
     print("---%s---" % game.country.name)
-    print("Infected: %s, Detected: %s Immunized: %s, Dead: %s" %\
-        (int(game.country.infected_people), game.country.detected_people, game.country.immunized_people, int(game.country.deaths)))
+    country_status(game.country)
     print("--------------")
-    print(game.country.transmission_multiplier, game.viruses[0].r0)
-    print ()
+    print()
     print("What will you do?")
+
+def country_status(country):
+        print("Infected: %s, Detected: %s Immunized: %s, Dead: %s, Active Measures: %s" %(
+            int(country.infected_people), country.detected_people, 
+            country.immunized_people, int(country.deaths), 
+            format_measures(country.active_measures)
+            ))
+        print(country.detection_rate, country.transmission_multiplier)
+
+def format_measures(measures):
+    if measures:
+        return " ".join((m.formatted() for m in measures))
+    else: 
+        return "None"
 
 def slow_print(str,speed=1):
     for letter in str:
@@ -75,8 +92,3 @@ def slow_print(str,speed=1):
 def clear():
     if not NO_CLEAR:
         print(chr(27) + "[2J")
-
-
-NO_CLEAR = False
-if '--no-clear' in sys.argv:
-    NO_CLEAR = True

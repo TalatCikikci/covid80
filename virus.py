@@ -1,6 +1,7 @@
 from random import random, choice
 
 from utils import rdecide
+from constants import suspicious_deaths
 import events 
 
 class Virus(object):
@@ -44,7 +45,7 @@ class Virus(object):
     def infect(self, country):
         country.infected_people += (country.infected_people * 
             self.r0 / self.duration * # infection rate per week 
-            (0.5+random()))
+            (0.5+random())) * country.transmission_multiplier
 
     def sequenced(self):
         self.is_sequenced = True
@@ -54,8 +55,8 @@ class Virus(object):
             pass
 
     def tick(self):
-        if not self.is_sequenced:
-            if self.game.week > 5 and rdecide(0.6):
-                self.sequenced()
         for country in self.game.countries:
             self.infect(country)
+            if not self.is_sequenced:
+                if country.deaths > suspicious_deaths and rdecide(0.6):
+                    self.sequenced()

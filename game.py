@@ -10,7 +10,6 @@ from virus import Virus
 
 class Game(object):
     player = None
-    country = None
     week = 0
     viruses = []
     over = False
@@ -20,7 +19,6 @@ class Game(object):
     event_history = []
 
     def __init__(self, player, country):
-
         for name in country_names:
             population = randrange(100000,100000000)
             area = population * average_population_density * randrange(3,30)/10
@@ -35,19 +33,21 @@ class Game(object):
             self.countries.append(c)
 
         self.player = player
-        self.country = country
-        self.countries.append(self.country)
+        self.countries.append(country)
 
         initial_virus = Virus(self, is_initial=True)
         self.viruses.append(initial_virus)
 
-    def tick(self):
+    def tick(self, action=None):
         self.__class__.event_history.extend(self.new_events)
         self.__class__.new_events = []
 
-        inputs = []
         self.week += 1
     
+        if action:
+            measure = action()
+            self.country.new_measures.append(measure)
+        
         for v in self.viruses:
             new_virus = v.check_mutation()
             if new_virus:
@@ -56,13 +56,17 @@ class Game(object):
                 lucky_country.viruses.append(new_virus)
 
             v.tick()
-
         for country in self.countries:
             if country.population <= country.deaths:
                 self.countries.remove(country)
             country.tick(self)
 
+        inputs = self.country.available_actions
         return inputs
+
+    @property
+    def country(self):
+        return self.countries[-1]
 
     @property
     def total_infected(self):
