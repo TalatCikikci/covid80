@@ -49,22 +49,36 @@ class UI(object):
         menu.play()
 
     def initial_inputs(self):
-        inputs = []
+        values = []
 
         def _return_vars():
-            inputs.append(country_name.get_value())
+            values.append(player_name.get_value().capitalize())
+            values.append(country_name.get_value().capitalize())
+            values.append(int(population.get_value()))
+
+
             menu.set_leave()
 
-        country_name = thorpy.Inserter(name="Write here:", value="testistan")
+        player_name = thorpy.Inserter(name="Your name:")
+        country_name = thorpy.Inserter(name="Country name:")
+        population = thorpy.Inserter(name="Country population")
+        area_base = thorpy.DropDownListLauncher(const_text="Country area",
+                                                var_text="",
+                                         titles=["XS", "S", "M", "L", "XL"])
+
         ok_button = thorpy.make_button('OK', func=_return_vars)
 
-        background = thorpy.Background(color=(255,255,255), elements = [country_name, ok_button])
+        background = thorpy.Background(color=(255,255,255), elements = [player_name, 
+                    country_name,
+                    population,
+                    area_base,
+                    ok_button])
 
         thorpy.store(background)
         menu = thorpy.Menu(background)
         menu.play()
 
-        return inputs
+        return values
 
     def quit(self):
 
