@@ -21,8 +21,10 @@ class AI(object):
 
             if operator == AI.OR:
                 action_checks.append(any(checks))
-            else:  # default and
+            elif operator == AI.AND:
                 action_checks.append(all(checks))
+            else:
+                raise Exception('no valid operator')
 
         return all(action_checks)
 
