@@ -3,8 +3,16 @@ import re
 
 class Action(object):
     """
-    ai_action = [{'deaths':'ge=10'}, { 'game.total_dead': 'gt=250'}] means deaths>=10 OR game.total_dead>250
-    ai_action = [{'deaths':'le=10', 'game.total_dead': 'lt=250'}] means deaths<=10 AND game.total_dead<250
+    ai_action = [
+        {
+            'actions': [
+                {'deaths':'ge=10'},
+                { 'game.total_dead': 'gt=250'}
+            ],
+            'operator': 'or'
+        }
+    ]
+    means deaths>=10 OR game.total_dead>250
     """
 
     ai_action = [
