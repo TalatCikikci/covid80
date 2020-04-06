@@ -9,19 +9,22 @@ class AI(object):
         self.obj = obj
 
     def eval_condition(self, condition):
-        checks = []
         actions = condition['actions']
-        operator = condition['operator']
+        operator = condition.get('operator', AI.AND)
 
+        action_checks = []
         for action in actions:
+            checks = []
             for key, value in action.items():
                 attr = utils.rgetattr(self.obj, key)
                 checks.append(utils.eval_condition(value, attr))
 
-        if operator == AI.OR:
-            return any(checks)
-        else:  # default and
-            return all(checks)
+            if operator == AI.OR:
+                action_checks.append(any(checks))
+            else:  # default and
+                action_checks.append(all(checks))
+
+        return all(action_checks)
 
     def evaluate_action(self, action):
         return all(
