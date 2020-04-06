@@ -1,33 +1,35 @@
-from random import choices
-import queue
 import math
+import queue
+from random import choices
 
-import utils
+from actions import (
+    LargeGatherings, Schools, BarsRestaurants, Streets,
+    OptionalTests, OptionalMask, FoodOrdering, OptionalSocialDistance,
+    MandatoryMask, MandatoryTests
+)
+from ai import AI
 from constants import sickness_duration, suspicious_deaths
-from actions import Nothing, LargeGatherings, Schools, BarsRestaurants, \
-                    Streets, OptionalTests, OptionalMask, \
-                    FoodOrdering, OptionalSocialDistance, \
-                    MandatoryMask, MandatoryTests
+
 
 class Country(object):
     rights = (
-        LargeGatherings, Schools, BarsRestaurants, \
+        LargeGatherings, Schools, BarsRestaurants,
         Streets, FoodOrdering
     )
+
     measures = (
-        OptionalMask, OptionalTests, OptionalSocialDistance, \
+        OptionalMask, OptionalTests, OptionalSocialDistance,
         MandatoryMask, MandatoryTests
     )
 
     def __repr__(self):
         return self.name
 
-    def __init__(self, 
-                population=8279000,
-                area=357114, popularity=0.9,
-                name="Testistan", gdp=30000, ai=True):
+    def __init__(self, population=8279000, area=357114,
+                 popularity=0.9, name="Testistan", gdp=30000, ai=True):
 
         self.ai = ai
+        self.ai_manager = AI(self)
         self.population = population
         self.initial_population = population
         self.area = area
@@ -35,9 +37,9 @@ class Country(object):
         self.gdp = gdp
         self.name = name
         self._infection_history = queue.Queue(sickness_duration)
-        self.gatherings = self.population / 20 #per day
-        self.gathering_size = 20 #mean
-        self.detection_rate = self.gdp/30000 * 0.002 #30000 mean gdp, 0.0002 base detection rate without tests
+        self.gatherings = self.population / 20  # per day
+        self.gathering_size = 20  # mean
+        self.detection_rate = self.gdp/30000 * 0.002  # 30000 mean gdp, 0.0002 base detection rate without tests
         self.new_measures = []
         self.active_measures = []
         self.viruses = []
@@ -45,14 +47,14 @@ class Country(object):
         self.detected_people = 0
         self.immunized_people = 0
         self.deaths = 0
-        self.economy = 1 #0-2, 1 is usual
+        self.economy = 1  # 0-2, 1 is usual
         self.vaccine_fund = 0
         self.incoming_people = 0
         self.incoming_infected = 0
         self.available_tests = 0
         self.initial_population = population
-        self.workforce = 1 #0-2, 1 is usual
-        self.p2p_distance = 1 #0-1, 1 is usual
+        self.workforce = 1  # 0-2, 1 is usual
+        self.p2p_distance = 1  # 0-1, 1 is usual
 
     def travel(self, popularity_index):
         travelling_people = int(self.population*self.gdp/100000000)
@@ -94,7 +96,6 @@ class Country(object):
                     for name, value in effect.items():
                         setattr(self, name, value)
 
-                    
             self.new_measures.remove(m)
             self.active_measures.append(m)
 
@@ -105,42 +106,14 @@ class Country(object):
         self.health_care(game.week, game.viruses)
 
         if self.ai:
-            self.ai_evaluate_actions()
-
+            self.evaluate_actions()
 
         self.apply_new_measures()
 
-    def ai_evaluate_actions(self):
-        for m in self.available_actions:
-            take_action = False
-
-            #TODO: merge this if/else
-            if len(m.ai_action) == 1: #AND or just 1 condition
-                for condition in m.ai_action:
-
-                    for key, val in condition.items():
-                        attr = utils.rgetattr(self, key)
-                        check = utils.eval_condition(val, attr)
-                        if not check:
-                            take_action = False
-                            break
-                        else:
-                            take_action = True
-            else:
-                for condition in m.ai_action: #OR
-                    for key, val in condition.items():
-                        attr = utils.rgetattr(self, key)
-                        check = utils.eval_condition(val, attr)
-                        if not check:
-                            take_action = False
-                        else:
-                            take_action = True
-                            break
-            
-            if take_action:
-                action = m()
+    def evaluate_actions(self):
+        for action in self.available_actions:
+            if self.ai_manager.evaluate_action(action):
                 self.new_measures.append(action)
-
 
     def health_care(self, week, viruses):
         if week >= sickness_duration:
@@ -151,10 +124,8 @@ class Country(object):
             self.deaths = infected_two_weeks * v.death_rate
             self.infected_people -= infected_two_weeks
             self.immunized_people += int(infected_two_weeks)
-            if self.game.total_dead > suspicious_deaths * 10: #start investigation after this amount of deaths
+            if self.game.total_dead > suspicious_deaths * 10:  # start investigation after this amount of deaths
                 self.detected_people = int(self.infected_people*self.detection_rate)
-
-        
 
         self._infection_history.put(self.infected_people)
 
@@ -177,13 +148,12 @@ class Country(object):
         base_rate = self.gatherings * self.gathering_size / self.initial_population
         return  base_rate / self.infection_scare / self.death_scare
 
-    #TODO: use diffing all against self.active_measures
+    # TODO: use diffing all against self.active_measures
     @property
     def banned_rights(self):
         return (right for right in self.rights if right.banned)
 
-
-    #TODO: use diffing all against self.active_measures
+    # TODO: use diffing all against self.active_measures
     @property
     def allowed_rights(self):
         return (right for right in self.rights if not right.banned)

@@ -1,10 +1,8 @@
-from random import randrange, random, gauss, choice
+from random import randrange, choice
 
-from utils import rdecide, trunc_gauss
 from constants import countries as country_names, average_population_density
-from cli import clear
-
 from country import Country
+from utils import trunc_gauss
 from virus import Virus
 
 
@@ -20,16 +18,16 @@ class Game(object):
 
     def __init__(self, player, country):
         for name in country_names:
-            population = randrange(100000,100000000)
-            area = population * average_population_density * randrange(3,30)/10
-            popularity = trunc_gauss(0.5,0.1)
-            gdp = int(trunc_gauss(0.6,0.3)*50000)
+            population = randrange(100000, 100000000)
+            area = population * average_population_density * randrange(3, 30) / 10
+            popularity = trunc_gauss(0.5, 0.1)
+            gdp = int(trunc_gauss(0.6, 0.3) * 50000)
 
             c = Country(population=population,
-                area=area,
-                popularity=popularity,
-                name=name,
-                gdp=gdp)
+                        area=area,
+                        popularity=popularity,
+                        name=name,
+                        gdp=gdp)
             self.countries.append(c)
 
         self.player = player

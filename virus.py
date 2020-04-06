@@ -1,22 +1,23 @@
 from random import random, choice
 
-from utils import rdecide
+import events
 from constants import suspicious_deaths
-import events 
+from utils import rdecide
+
 
 class Virus(object):
     game = None
     r0 = 2.4
-    death_rate = 0.035 / 10 #assumes the actual death_rate is lower than the current calculations
+    death_rate = 0.035 / 10  # assumes the actual death_rate is lower than the current calculations
     icu_rate = 0.1
     hospital_rate = 0.2
     duration = 2 #weeks
     is_sequenced = False
     origin = None
 
-    mutation_rate = 0.001 #this determines the chance of virus mutating
-    mutation_chance = 0.01 #this determines the chance of virus feature developing (death_rate++, icu_rate++, etc)
-    mutation_amount = 1.1 #this states how much the virus feature will develop (multiplied)
+    mutation_rate = 0.001  # this determines the chance of virus mutating
+    mutation_chance = 0.01  # this determines the chance of virus feature developing (death_rate++, icu_rate++, etc)
+    mutation_amount = 1.1  # this states how much the virus feature will develop (multiplied)
 
     def __init__(self, game, is_initial=False):
         self.game = game
@@ -38,14 +39,16 @@ class Virus(object):
         return cls(game)
 
     def check_mutation(self):
-        if rdecide(self.mutation_rate): #Decide if each virus mutates
+        if rdecide(self.mutation_rate):  # Decide if each virus mutates
             new_virus = self.mutate(self.game) 
             return new_virus        
 
     def infect(self, country):
-        country.infected_people += (country.infected_people * 
-            self.r0 / self.duration * # infection rate per week 
-            (0.5+random())) * country.transmission_multiplier
+        country.infected_people += (
+            country.infected_people *
+            self.r0 / self.duration *  # infection rate per week
+            (0.5+random())
+        ) * country.transmission_multiplier
 
     def sequenced(self):
         self.is_sequenced = True

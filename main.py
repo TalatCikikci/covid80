@@ -1,12 +1,11 @@
 import sys
 
-from game import Game
-from country import Country
-from player import Player
-from virus import Virus
-from actions import Nothing
-from serializer import serialize
 import cli
+from actions import Nothing
+from country import Country
+from game import Game
+from player import Player
+from serializer import serialize
 
 
 def main():
@@ -25,7 +24,7 @@ def main():
 def loop(game):
     action = None
     while not game.over:
-        serialize(game) # create a savefile
+        # serialize(game)  # create a save file
         options = game.tick(action)
         cli.print_status(game)
         selected_action = cli.menu(Nothing, options)
